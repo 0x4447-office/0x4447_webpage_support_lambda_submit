@@ -7,6 +7,8 @@ exports.handler = (event) => {
 
 	return new Promise(function(resolve, reject) {
 
+        console.log(event);
+
 		//
 		//	1. This container holds all the data to be passed around the chain.
 		//
