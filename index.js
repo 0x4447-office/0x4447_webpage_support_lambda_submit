@@ -91,6 +91,8 @@ function send_the_email(container)
 
 		console.info('send_the_email');
 
+		let text = JSON.stringify(container.req.data);
+
 		//
 		//	1.	Preapre the email data used to construct the final email
 		//
@@ -100,7 +102,7 @@ function send_the_email(container)
 			subject	: "From support page",
 			reply_to: container.req.data.email,
 			html	: container.req.html 	|| '',
-			text	: container.req.data 	|| ''
+			text	: text 	|| ''
 		};
 
 		//
