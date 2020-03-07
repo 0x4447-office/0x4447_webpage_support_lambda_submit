@@ -1,6 +1,13 @@
 let AWS = require("aws-sdk");
 
 //
+//	Initialize AWS Lambda.
+//
+let lambda = new AWS.Lambda({
+	region: process.env.AWS_REGION || 'us-east-1'
+});
+
+//
 //	LAMBDA_DESCRIPTION
 //
 exports.handler = (event) => {
