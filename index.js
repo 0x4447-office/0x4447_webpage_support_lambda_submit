@@ -13,7 +13,9 @@ exports.handler = (event) => {
 		//	1. This container holds all the data to be passed around the chain.
 		//
 		let container = {
-			req: {},
+			req: {
+				data: event
+			},
 			//
 			//	The default response for Lambda.
 			//
@@ -28,7 +30,7 @@ exports.handler = (event) => {
 		step_one(container)
 			.then(function(container) {
 
-				return step_two(container);
+				return send_the_email(container);
 
 			}).then(function(container) {
 
@@ -76,16 +78,51 @@ function step_one(container)
 //
 //
 //
-function step_two(container)
+function send_the_email(container)
 {
 	return new Promise(function(resolve, reject) {
 
-		console.info("step_two");
+		console.info('send_the_email');
 
 		//
-        //	->	Move to the next promise.
-        //
-        return resolve(container);
+		//	1.	Preapre the email data used to construct the final email
+		//
+		let data = {
+			from	: process.env.FROM,
+			to		: process.env.TO,
+			subject	: "From support page",
+			reply_to: container.req.data.email,
+			html	: container.req.html 	|| '',
+			text	: container.req.data 	|| ''
+		};
+
+		//
+		//	2.	Prepare the request configuration
+		//
+		let params = {
+			FunctionName: 'front_end_send_email',
+			Payload: JSON.stringify(data, null, 2),
+		};
+
+		//
+		//	3.	Invoke the Lambda Function
+		//
+		lambda.invoke(params, function(error, data) {
+
+			//
+			//	1.	Check if there was an error in invoking the fnction
+			//
+			if(error)
+			{
+				return reject(error);
+			}
+
+			//
+			//	->	Move to the next chain
+			//
+			return resolve(container);
+
+		});
 
 	});
 }
